@@ -58,7 +58,14 @@ public class CourseService {
         if (courses.size() < 2) return "Not enough data for comparison.";
         return "Not Implemented !!";
     }
+
     public void deleteCourse(Long id) {
-        System.out.println("not implemented yet");
+        if (!courseRepository.existsById(id)) {
+            System.out.println("Error: Course with ID " + id + " not found.");
+            return;
+        }
+
+        courseRepository.deleteById(id);
+        System.out.println("Course with ID " + id + " deleted successfully.");
     }
 }
