@@ -4,37 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Course</title>
-  <!-- Bootstrap CSS -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="/js/validation.js"></script>
+  <style>
+    .error-border { border: 2px solid red !important; }
+    .valid-border { border: 2px solid green !important; }
+    .text-danger { font-size: 0.9em; }
+  </style>
 </head>
 <body>
 <div class="container">
   <h2>Add Course</h2>
 
-  <div th:if="${message != null}" class="alert alert-info" role="alert">
-    <span th:text="${message}"></span>
-  </div>
+  <div id="alertMessage" class="alert alert-info" style="display: none;"></div>
 
-  <form action="#" th:action="@{/courses}" th:object="${course}" method="post">
+  <form id="courseForm" action="#" th:action="@{/courses}" th:object="${course}" method="post">
     <div class="form-group">
       <label for="courseName">Course Name:</label>
       <input type="text" id="courseName" th:field="*{courseName}" class="form-control" required>
+      <small id="courseNameError" class="text-danger" style="display: none;">Course name cannot be empty or only spaces.</small>
     </div>
     <div class="form-group">
       <label for="startDate">Start Date:</label>
       <input type="date" id="startDate" th:field="*{startDate}" class="form-control" required>
+      <small id="startDateError" class="text-danger" style="display: none;">Start Date is required.</small>
     </div>
     <div class="form-group">
       <label for="endDate">End Date:</label>
       <input type="date" id="endDate" th:field="*{endDate}" class="form-control" required>
+      <small id="endDateError" class="text-danger" style="display: none;">End Date must be after Start Date.</small>
     </div>
     <div class="form-group">
       <label for="lectureHours">Lecture Hours:</label>
       <input type="number" id="lectureHours" th:field="*{lectureHours}" class="form-control" step="any" required>
+      <small id="lectureHoursError" class="text-danger" style="display: none;">Lecture hours must be a positive number.</small>
     </div>
     <div class="form-group">
       <label for="labCount">Lab Count:</label>
       <input type="number" id="labCount" th:field="*{labCount}" class="form-control" required>
+      <small id="labCountError" class="text-danger" style="display: none;">Lab count must be 0 or greater.</small>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
