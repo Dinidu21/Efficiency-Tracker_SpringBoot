@@ -44,7 +44,12 @@ public class Course {
     }
 
     public double getEfficiency() {
-        return (lectureHours + labCount) / (double) getDaysSpent();
+        if (getDaysSpent() == 0) return 0;
+
+        double labHours = labCount * 0.5;
+        double efficiency = (lectureHours + labHours) / (double) getDaysSpent();
+
+        return Math.round(efficiency * 100.0) / 100.0;
     }
 
     public void setDaysSpent(long daysSpent) {
