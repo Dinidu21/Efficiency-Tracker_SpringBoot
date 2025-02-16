@@ -2,7 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Efficiency Tracker</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+
 </head>
 <body>
 <div class="container mt-4">
@@ -30,12 +34,34 @@
             <td th:text="${course.lectureHours} + ' hrs'"></td>
             <td th:text="${course.labCount}"></td>
             <td th:text="${course.daysSpent} + ' days'"></td>
-            <td th:text="${course.totalSpentTime != null ? course.totalSpentTime : 'N/A'}"></td>
-            <td th:text="${course.efficiency} + '/day'"></td>
+
+            <td th:text="${course.totalSpentTime != null ? course.totalSpentTime : 'N/A'}"
+                data-toggle="tooltip"
+                data-html="true"
+                th:title="'Calculation: Total Time Spent = (Lecture Hours) + (Lab Count × 30 mins)' +
+                          ' = ' + ${course.lectureHours} + ' hrs + ' + (${course.labCount * 30}) + ' mins'">
+            </td>
+
+            <td th:text="${course.efficiency} + '/day'"
+                data-toggle="tooltip"
+                data-html="true"
+                th:title="'Calculation: Efficiency = Total Spent Time / (Days Spent × 24 hrs)' +
+                          ' = ' + ${course.totalSpentTime} + ' / ' + (${course.daysSpent * 24}) + ' hrs'">
+            </td>
+
             <td><a th:href="@{/courses/delete/{id}(id=${course.id})}" class="btn btn-danger">Delete</a></td>
         </tr>
         </tbody>
     </table>
 </div>
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip({
+            html: true,
+            placement: 'top',
+            trigger: 'hover'
+        });
+    });
+</script>
 </body>
 </html>
