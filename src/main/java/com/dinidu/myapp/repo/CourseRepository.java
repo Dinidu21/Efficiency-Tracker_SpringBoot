@@ -12,4 +12,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     // Custom query to check for duplicate course names after normalizing spaces
     @Query("SELECT c FROM Course c WHERE TRIM(BOTH ' ' FROM c.courseName) = :name")
     Optional<Course> findByNormalizedCourseName(@Param("name") String name);
+
+    boolean existsByCourseNameIgnoreCase(String formattedName);
 }

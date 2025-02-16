@@ -16,6 +16,7 @@ public class CourseController {
     @GetMapping
     public String listCourses(Model model) {
         model.addAttribute("courses", courseService.getAllCourses());
+        model.addAttribute("efficiencyChange", courseService.getWeeklyEfficiencyChange());
         return "index";
     }
 
@@ -33,9 +34,8 @@ public class CourseController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteCourse(@PathVariable Long id, Model model) {
+    public String deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
-        model.addAttribute("message", "Course deleted successfully!");
         return "redirect:/courses";
     }
 }

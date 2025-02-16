@@ -10,16 +10,20 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String courseName;
+
     private LocalDate startDate;
     private LocalDate endDate;
     private double lectureHours;
     private int labCount;
-
     private long daysSpent;
 
     @Transient
     private double efficiency;
+
+    @Transient
+    private String totalSpentTime;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -39,20 +43,39 @@ public class Course {
     public int getLabCount() { return labCount; }
     public void setLabCount(int labCount) { this.labCount = labCount; }
 
-    public long getDaysSpent() {
-        return ChronoUnit.DAYS.between(startDate, endDate) + 1;
+    public String getTotalSpentTime() {
+        return totalSpentTime;
     }
 
-    public double getEfficiency() {
-        if (getDaysSpent() == 0) return 0;
+    public void setTotalSpentTime(double totalSpentTime) {
+        this.totalSpentTime = formatTime(totalSpentTime);
+    }
 
-        double labHours = labCount * 0.5;
-        double efficiency = (lectureHours + labHours) / (double) getDaysSpent();
+    public long getDaysSpent() { return ChronoUnit.DAYS.between(startDate, endDate) + 1; }
 
-        return Math.round(efficiency * 100.0) / 100.0;
+    public String getEfficiency() {
+        if (daysSpent <= 0) {
+            return "N/A";
+        }
+
+        double daysSpentInHours = daysSpent * 24;
+        double efficiencyValue = (lectureHours + (labCount * 0.5)) / daysSpentInHours;
+
+        return formatTime(efficiencyValue * 24);
+    }
+
+
+    public static String formatTime(double hours) {
+        int fullHours = (int) hours;
+        int minutes = (int) ((hours - fullHours) * 60);
+        return fullHours + " hrs " + minutes + " mins";
     }
 
     public void setDaysSpent(long daysSpent) {
         this.daysSpent = daysSpent;
+    }
+
+    public void setEfficiency(double efficiency) {
+        this.efficiency = efficiency;
     }
 }
