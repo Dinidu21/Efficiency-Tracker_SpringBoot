@@ -15,13 +15,25 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public void saveCourse(Course course) {
+    public String saveCourse(Course course) {
+        if (course.getLabCount() < 0) {
+            return "Error: Lab Count must be a non-negative integer (0 or greater).";
+        }
+
+        if (course.getLectureHours() < 0) {
+            return "Error: Lecture Hours must be a non-negative number (0 or greater).";
+        }
+
+        if (course.getLectureHours() == 0) {
+            return "Error: Lecture Hours cannot be zero.";
+        }
+
+        course.setDaysSpent(course.getDaysSpent());
         courseRepository.save(course);
+
+        return "Course added successfully!";
     }
 
-    public Course getCourseById(Long id) {
-        return courseRepository.findById(id).orElse(null);
-    }
 
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);

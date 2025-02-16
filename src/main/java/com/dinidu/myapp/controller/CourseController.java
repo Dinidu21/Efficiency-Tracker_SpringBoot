@@ -19,7 +19,6 @@ public class CourseController {
         return "index";
     }
 
-
     @GetMapping("/new")
     public String showAddCourseForm(Model model) {
         model.addAttribute("course", new Course());
@@ -27,14 +26,16 @@ public class CourseController {
     }
 
     @PostMapping
-    public String addCourse(@ModelAttribute Course course) {
-        courseService.saveCourse(course);
+    public String addCourse(@ModelAttribute Course course, Model model) {
+        String message = courseService.saveCourse(course);
+        model.addAttribute("message", message);
         return "redirect:/courses";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteCourse(@PathVariable Long id) {
+    public String deleteCourse(@PathVariable Long id, Model model) {
         courseService.deleteCourse(id);
+        model.addAttribute("message", "Course deleted successfully!");
         return "redirect:/courses";
     }
 }
