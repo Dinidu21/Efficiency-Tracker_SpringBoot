@@ -18,12 +18,60 @@ public class Course {
     private double lectureHours;
     private int labCount;
     private long daysSpent;
+    private double targetLectureHours;
+    private int targetLabCount;
+    private boolean completed;
+    @Transient
+    private boolean overdue;
+
+    @Transient
+    private double completionPercentage;
 
     @Transient
     private double efficiency;
 
     @Transient
     private String totalSpentTime;
+
+    // Add these methods
+    public boolean isOverdue() {
+        return overdue;
+    }
+
+    public int getTargetLabCount() {
+        return targetLabCount;
+    }
+
+    public void setTargetLabCount(int targetLabCount) {
+        this.targetLabCount = targetLabCount;
+    }
+
+    public void setTotalSpentTime(String totalSpentTime) {
+        this.totalSpentTime = totalSpentTime;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public void setOverdue(boolean overdue) {
+        this.overdue = overdue;
+    }
+
+    public double getCompletionPercentage() {
+        return completionPercentage;
+    }
+
+    public void setCompletionPercentage(double completionPercentage) {
+        this.completionPercentage = completionPercentage;
+    }
+
+    public double getTargetLectureHours() { return targetLectureHours; }
+    public void setTargetLectureHours(double targetLectureHours) { this.targetLectureHours = targetLectureHours; }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

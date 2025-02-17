@@ -17,6 +17,7 @@ public class CourseController {
     public String listCourses(Model model) {
         model.addAttribute("courses", courseService.getAllCourses());
         model.addAttribute("efficiencyChange", courseService.getWeeklyEfficiencyChange());
+        model.addAttribute("summary", courseService.getProgressSummary());
         return "index";
     }
 
