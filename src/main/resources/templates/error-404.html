@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Lost in Space?</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0b0c10;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 { font-size: 80px; margin-bottom: 10px; }
+        p { font-size: 20px; margin-bottom: 20px; }
+        .space { width: 100px; height: 100px; animation: float 3s infinite ease-in-out; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        .btn {
+            padding: 10px 20px;
+            background: #66fcf1;
+            color: black;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .btn:hover { background: #45a29e; }
+    </style>
+</head>
+<body>
+<img src="https://cdn-icons-png.flaticon.com/512/5617/5617225.png" class="space" alt="Lost Astronaut">
+<h1>404</h1>
+<p>Oops! You seem lost in space... 🌌</p>
+<a href="/" class="btn">Go Home 🚀</a>
+</body>
+</html>
