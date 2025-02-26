@@ -25,7 +25,9 @@ public class CourseController {
 
     @GetMapping("/add")
     public String showAddCourseForm(Model model) {
-        model.addAttribute("course", new CourseDetails());
+        CourseDetails course = new CourseDetails();
+        course.setCourseCode(courseService.generateNextCourseCode()); // Auto-generate course code
+        model.addAttribute("course", course);
         return "add-course";
     }
 
@@ -33,7 +35,7 @@ public class CourseController {
     public String saveCourse(@Validated @ModelAttribute("course") CourseDetails course,
                              BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            return "add-course"; // Return to form with errors
+            return "add-course";
         }
         courseService.saveCourse(course);
         return "redirect:/courses";
@@ -51,7 +53,7 @@ public class CourseController {
                                @Validated @ModelAttribute("course") CourseDetails course,
                                BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            return "edit-course"; // Return to form with errors
+            return "edit-course";
         }
         courseService.updateCourse(courseCode, course);
         return "redirect:/courses";

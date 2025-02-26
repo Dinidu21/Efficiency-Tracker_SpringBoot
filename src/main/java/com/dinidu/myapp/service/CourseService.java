@@ -42,4 +42,25 @@ public class CourseService {
         CourseDetails course = getCourseByCode(courseCode);
         courseRepository.delete(course);
     }
+
+    public String generateNextCourseCode() {
+        List<CourseDetails> allCourses = courseRepository.findAll();
+        if (allCourses.isEmpty()) {
+            return "C001"; // Start with C001 if no courses exist
+        }
+
+        // Find the highest course code
+        String highestCode = allCourses.stream()
+                .map(CourseDetails::getCourseCode)
+                .filter(code -> code.startsWith("C") && code.length() == 4)
+                .max(String::compareTo)
+                .orElse("C000");
+
+        // Extract the numeric part and increment
+        int number = Integer.parseInt(highestCode.substring(1)); // Remove "C" and parse
+        number++;
+
+        // Format as CXXX (e.g., C001, C002, etc.)
+        return String.format("C%03d", number);
+    }
 }
