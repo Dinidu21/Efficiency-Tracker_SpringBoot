@@ -23,8 +23,8 @@ public class CourseDetails {
     @Id
     private String courseCode;
     private String courseName;
-    private float labCount;
-    private int lecHours;
+    private int labCount;
+    private float lecHours;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
