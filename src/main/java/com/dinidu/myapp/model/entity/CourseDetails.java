@@ -12,7 +12,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter
@@ -38,6 +37,15 @@ public class CourseDetails {
     @Transient // Not persisted to database
     private float totalWorkingHours;
 
+    @Transient // Not persisted to database
+    private float averageWorkingHoursPerDay;
+
+    // Calculate Average Working Hours Per Day
+    public float getAverageWorkingHoursPerDay() {
+        long daysSpent = getTotalDaysSpent();
+        return (daysSpent > 0) ? getTotalWorkingHours() / daysSpent : 0; // Avoid division by zero
+    }
+
     // Calculate TotalDaysSpent
     public long getTotalDaysSpent() {
         if (startDate != null && endDate != null) {
@@ -58,6 +66,21 @@ public class CourseDetails {
 
         // Add lecture hours and lab hours
         return lecHours + labTimeInHours;
+    }
+
+    public String getFormattedAverageWorkingHoursPerDay() {
+        float avgHoursPerDay = getAverageWorkingHoursPerDay();
+
+        int hours = (int) avgHoursPerDay; // Extract whole hours
+        int minutes = Math.round((avgHoursPerDay - hours) * 60); // Convert fraction to minutes
+
+        if (hours > 0 && minutes > 0) {
+            return hours + " hrs " + minutes + " mins";
+        } else if (hours > 0) {
+            return hours + " hrs";
+        } else {
+            return minutes + " mins";
+        }
     }
 
 }
