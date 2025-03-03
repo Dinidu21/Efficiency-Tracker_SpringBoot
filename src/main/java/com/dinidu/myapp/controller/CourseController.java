@@ -27,12 +27,14 @@ public class CourseController {
 
     @GetMapping
     public String getDashboard(Model model) {
+        logger.info("Fetching all courses for dashboard.");
         model.addAttribute("courses", courseService.getAllCourses());
         return "dashboard";
     }
 
     @GetMapping("/add")
     public String showAddCourseForm(Model model) {
+        logger.info("Showing add course form.");
         CourseDetails course = new CourseDetails();
         course.setCourseCode(courseService.generateNextCourseCode());
         model.addAttribute("course", course);
@@ -42,11 +44,14 @@ public class CourseController {
     @PostMapping("/save")
     public String saveCourse(@Validated @ModelAttribute("course") CourseDetails course,
                              BindingResult bindingResult, Model model) {
+        logger.info("Attempting to save course: {}", course.getCourseCode());
         if (bindingResult.hasErrors()) {
+            logger.warn("Validation errors occurred while saving course: {}", course.getCourseCode());
             return "add-course";
         }
 
         if (courseService.existsByCourseCode(course.getCourseCode())) {
+            logger.warn("Course code already exists: {}", course.getCourseCode());
             bindingResult.rejectValue("courseCode", "error.course", "Course code already exists.");
             return "add-course";
         }
@@ -58,8 +63,10 @@ public class CourseController {
 
     @GetMapping("/edit/{courseCode}")
     public String showEditCourseForm(@PathVariable("courseCode") String courseCode, Model model) {
+        logger.info("Fetching course for editing: {}", courseCode);
         Optional<CourseDetails> course = Optional.ofNullable(courseService.getCourseByCode(courseCode));
         if (course.isEmpty()) {
+            logger.error("Course not found: {}", courseCode);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found");
         }
         model.addAttribute("course", course.get());
@@ -70,11 +77,14 @@ public class CourseController {
     public String updateCourse(@PathVariable("courseCode") String courseCode,
                                @Validated  @ModelAttribute("course") CourseDetails course,
                                BindingResult bindingResult, Model model) {
+        logger.info("Attempting to update course: {}", courseCode);
         if (bindingResult.hasErrors()) {
+            logger.warn("Validation errors occurred while updating course: {}", courseCode);
             return "edit-course";
         }
 
         if (!courseService.existsByCourseCode(courseCode)) {
+            logger.error("Course not found: {} Update", courseCode);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found");
         }
 
@@ -85,7 +95,9 @@ public class CourseController {
 
     @DeleteMapping("/delete/{courseCode}")
     public String deleteCourse(@PathVariable("courseCode") String courseCode) {
+        logger.info("Attempting to delete course: {}", courseCode);
         if (!courseService.existsByCourseCode(courseCode)) {
+            logger.error("Course not found: {} Delete", courseCode);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found");
         }
 
