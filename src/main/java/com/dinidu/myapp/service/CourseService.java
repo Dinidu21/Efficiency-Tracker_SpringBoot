@@ -69,4 +69,9 @@ public class CourseService {
         // Format as CXXX (e.g., C001, C002, etc.)
         return String.format("C%03d", number);
     }
+
+    public boolean existsByCourseCode(String courseCode) {
+        return courseRepository.existsByCourseCode(courseCode);
+    }
+
 }
