@@ -2,11 +2,13 @@ package com.dinidu.myapp.controller;
 
 import com.dinidu.myapp.model.entity.CourseDetails;
 import com.dinidu.myapp.service.CourseService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/courses")
@@ -44,6 +46,9 @@ public class CourseController {
     @GetMapping("/edit/{courseCode}")
     public String showEditCourseForm(@PathVariable String courseCode, Model model) {
         CourseDetails course = courseService.getCourseByCode(courseCode);
+        if (course == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found");
+        }
         model.addAttribute("course", course);
         return "edit-course";
     }
