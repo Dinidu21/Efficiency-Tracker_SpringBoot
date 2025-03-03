@@ -5,7 +5,9 @@ import com.dinidu.myapp.model.entity.CourseDetails;
 import com.dinidu.myapp.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -16,26 +18,30 @@ public class CourseService {
     }
 
     public List<CourseDetails> getAllCourses() {
-        return courseRepository.findAll();
+        return courseRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(CourseDetails::getStartDate))
+                .collect(Collectors.toList());
     }
+
 
     public CourseDetails getCourseByCode(String courseCode) {
         return courseRepository.findById(courseCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with code: " + courseCode));
     }
 
-    public CourseDetails saveCourse(CourseDetails course) {
-        return courseRepository.save(course);
+    public void saveCourse(CourseDetails course) {
+        courseRepository.save(course);
     }
 
-    public CourseDetails updateCourse(String courseCode, CourseDetails courseDetails) {
+    public void updateCourse(String courseCode, CourseDetails courseDetails) {
         CourseDetails existingCourse = getCourseByCode(courseCode);
         existingCourse.setCourseName(courseDetails.getCourseName());
         existingCourse.setLabCount(courseDetails.getLabCount());
         existingCourse.setLecHours(courseDetails.getLecHours());
         existingCourse.setStartDate(courseDetails.getStartDate());
         existingCourse.setEndDate(courseDetails.getEndDate());
-        return courseRepository.save(existingCourse);
+        courseRepository.save(existingCourse);
     }
 
     public void deleteCourse(String courseCode) {
