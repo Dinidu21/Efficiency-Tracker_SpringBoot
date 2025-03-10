@@ -48,13 +48,13 @@ public class CourseDetails {
 
     // Calculate TotalDaysSpent
     public long getTotalDaysSpent() {
-        if (startDate != null && endDate != null) {
-            // Convert Date to LocalDate for better handling
+        if (startDate != null) {
             LocalDate startLocalDate = startDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-            LocalDate endLocalDate = endDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            LocalDate endLocalDate = (endDate != null)
+                    ? endDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                    : LocalDate.now(); // Use today's date if endDate is null
 
-            // Calculate the total days, inclusive of both start and end dates
-            return ChronoUnit.DAYS.between(startLocalDate, endLocalDate) + 1; // Add 1 to include the end date
+            return ChronoUnit.DAYS.between(startLocalDate, endLocalDate) + 1; // Include end date
         }
         return 0;
     }
@@ -83,4 +83,10 @@ public class CourseDetails {
         }
     }
 
+    public String getFormattedEndDate() {
+        if (endDate == null) {
+            return LocalDate.now().toString() + " (Ongoing)"; // Show today’s date with "Ongoing"
+        }
+        return endDate.toString();
+    }
 }
