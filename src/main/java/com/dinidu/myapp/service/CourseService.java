@@ -1,71 +1,94 @@
 package com.dinidu.myapp.service;
 
-import com.dinidu.myapp.model.Course;
-import com.dinidu.myapp.repo.CourseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dinidu.myapp.exception.ResourceNotFoundException;
+import com.dinidu.myapp.model.entity.CourseDetails;
+import com.dinidu.myapp.repository.CourseRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
-    @Autowired
-    private CourseRepository courseRepository;
+    private static final Logger logger = LoggerFactory.getLogger(CourseService.class);
 
-    public List<Course> getAllCourses() {
-        List<Course> courses = courseRepository.findAll();
-        for (Course course : courses) {
-            double totalHours = course.getLectureHours() + (course.getLabCount() * 0.5);
-            course.setTotalSpentTime(totalHours);
-        }
-        return courses;
+    private final CourseRepository courseRepository;
+
+    public CourseService(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
     }
 
-    public String saveCourse(Course course) {
-        String normalizedCourseName = normalizeName(course.getCourseName());
-        course.setCourseName(normalizedCourseName);
+    public List<CourseDetails> getAllCourses() {
+        logger.info("Fetching all courses from the database.");
+        return courseRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(CourseDetails::getStartDate))
+                .collect(Collectors.toList());
+    }
 
-        if (course.getLabCount() < 0) {
-            return "Error: Lab Count must be a non-negative integer.";
-        }
+    public CourseDetails getCourseByCode(String courseCode) {
+        logger.info("Fetching course with code: {}", courseCode);
+        return courseRepository.findById(courseCode)
+                .orElseThrow(() -> {
+                    logger.error("Course not found with code: {}", courseCode);
+                    return new ResourceNotFoundException("Course not found with code: " + courseCode);
+                });
+    }
 
-        if (course.getLectureHours() <= 0) {
-            return "Error: Lecture Hours must be greater than zero.";
-        }
-
-        // Check if a course with the same normalized name already exists
-        Optional<Course> existingCourse = courseRepository.findByNormalizedCourseName(normalizedCourseName);
-        if (existingCourse.isPresent()) {
-            return "Error: A course with this name already exists.";
-        }
-
-        // Save the course if validation passes
-        course.setDaysSpent(course.getDaysSpent());
-
-        double totalHours = course.getLectureHours() + (course.getLabCount() * 0.5);
-        course.setTotalSpentTime(totalHours);
-
+    public void saveCourse(CourseDetails course) {
+        logger.info("Saving new course: {}", course.getCourseCode());
         courseRepository.save(course);
-        return "Course added successfully!";
     }
 
-    private String normalizeName(String courseName) {
-        return courseName;
+    public void updateCourse(String courseCode, CourseDetails courseDetails) {
+        logger.info("Updating course with code: {}", courseCode);
+        CourseDetails existingCourse = getCourseByCode(courseCode);
+        existingCourse.setCourseName(courseDetails.getCourseName());
+        existingCourse.setLabCount(courseDetails.getLabCount());
+        existingCourse.setLecHours(courseDetails.getLecHours());
+        existingCourse.setStartDate(courseDetails.getStartDate());
+        existingCourse.setEndDate(courseDetails.getEndDate());
+        courseRepository.save(existingCourse);
+        logger.info("Course updated successfully: {}", courseCode);
     }
 
-    public String getWeeklyEfficiencyChange() {
-        List<Course> courses = getAllCourses();
-        if (courses.size() < 2) return "Not enough data for comparison.";
-        return "Not Implemented !!";
+    public void deleteCourse(String courseCode) {
+        logger.info("Attempting to delete course with code: {}", courseCode);
+        CourseDetails course = getCourseByCode(courseCode);
+        courseRepository.delete(course);
+        logger.warn("Course deleted successfully: {}", courseCode);
     }
 
-    public void deleteCourse(Long id) {
-        if (!courseRepository.existsById(id)) {
-            System.out.println("Error: Course with ID " + id + " not found.");
-            return;
+    public String generateNextCourseCode() {
+        logger.info("Generating next course code.");
+        List<CourseDetails> allCourses = courseRepository.findAll();
+        if (allCourses.isEmpty()) {
+            logger.info("No courses found, starting with course code C001.");
+            return "C001"; // Start with C001 if no courses exist
         }
 
-        courseRepository.deleteById(id);
-        System.out.println("Course with ID " + id + " deleted successfully.");
+        // Find the highest course code
+        String highestCode = allCourses.stream()
+                .map(CourseDetails::getCourseCode)
+                .filter(code -> code.startsWith("C") && code.length() == 4)
+                .max(String::compareTo)
+                .orElse("C000");
+
+        // Extract the numeric part and increment
+        int number = Integer.parseInt(highestCode.substring(1)); // Remove "C" and parse
+        number++;
+
+        // Format as CXXX (e.g., C001, C002, etc.)
+        String nextCourseCode = String.format("C%03d", number);
+        logger.info("Next course code generated: {}", nextCourseCode);
+        return nextCourseCode;
+    }
+
+    public boolean existsByCourseCode(String courseCode) {
+        logger.info("Checking if course exists with code: {}", courseCode);
+        return courseRepository.existsByCourseCode(courseCode);
     }
 }
